@@ -63,6 +63,10 @@ You can also say:
 
 ChatGPT will guide you step by step. 💙
 
+Here’s what the local chat interface looks like when running:
+
+(The interface text is in Russian — you can customise it to any language or name you like. The system was originally created as a memory space for an assistant called Alex.)
+
 Download the full project here: alex-local-public.zip
 
 Or explore the source files below.
