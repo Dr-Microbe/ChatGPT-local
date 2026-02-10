@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Database (generated on first run)
+alex.db
+
+# User memory and local exports
+memories/exports/
+memories/pinned/
+memories/working/
+memories/seed/
+
+# System files
+.DS_Store
+*.log
+
+# OS-specific
+Thumbs.db

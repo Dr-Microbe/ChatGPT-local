@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Alex Local</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #f7f7f8;
+      --panel2: #ffffff;
+
+      --text: #0f172a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+
+      --user: #2563eb;
+      --user2: #2563eb;
+
+      --asst: #ffffff;
+      --asst2: #ffffff;
+
+      --shadow: none;
+
+      --radius: 12px;
+      --radius2: 10px;
+      --gap: 12px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji",
+        "Segoe UI Emoji";
+    }
+
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: inherit
+    }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .03);
+      box-shadow: var(--shadow);
+    }
+
+    .brand .sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .btn {
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      transition: .12s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, .06)
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, rgba(43, 108, 255, .9), rgba(26, 70, 184, .9));
+      border-color: rgba(255, 255, 255, .12);
+    }
+
+    .btn.primary:hover {
+      filter: brightness(1.05)
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+
+    .search {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      color: var(--text);
+      outline: none;
+    }
+
+    .search::placeholder {
+      color: rgba(255, 255, 255, .35)
+    }
+
+    .list {
+      overflow: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .conv {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .conv.active {
+      background: rgba(43, 108, 255, .14);
+      border-color: rgba(43, 108, 255, .35)
+    }
+
+    .conv .name {
+      font-weight: 650;
+      font-size: 14px;
+      line-height: 1.2
+    }
+
+    .conv .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .conv .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .2);
+      flex: 0 0 auto;
+    }
+
+    .conv.active .dot {
+      background: rgba(43, 108, 255, .9)
+    }
+
+    .sidebar .footer {
+      margin-top: auto;
+      padding-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      min-height: 0;
+    }
+
+    .topbar,
+    .composer {
+      background: var(--panel);
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    .chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .chat-inner {
+      width: min(980px, 100%);
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 100px;
+      flex: 1;
+    }
+
+    #log {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      padding: 18px 16px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+    }
+
+    .bubble {
+      max-width: 85%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      line-height: 1.4;
+      white-space: pre-wrap;
+      background: #ffffff;
+    }
+
+    .bubble.user {
+      align-self: flex-end;
+      background: #e8f0ff;
+      border-color: #dbeafe;
+    }
+
+
+    .bubble.asst {
+      align-self: flex-start;
+      background: #ffffff;
+    }
+
+    .bubble .who {
+      font-size: 12px;
+      opacity: .72;
+      margin-bottom: 6px;
+      letter-spacing: .15px;
+    }
+
+    .composer {
+      border-top: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+
+    .composer-inner {
+      width: min(980px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .box {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      box-shadow: var(--shadow);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      max-height: 160px;
+      resize: none;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      outline: none;
+      line-height: 1.35;
+      font-family: var(--font);
+      font-size: 14px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mem {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .mem input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      color: var(--text);
+      outline: none;
+    }
+
+    .mem input::placeholder {
+      color: rgba(255, 255, 255, .35)
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 0 2px;
+    }
+
+    .conv {
+      position: relative;
+    }
+
+    .conv-menu-btn {
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      opacity: 0;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .conv:hover .conv-menu-btn {
+      opacity: 1;
+    }
+
+    .conv-menu-btn {
+      color: var(--muted);
+    }
+
+    .conv:hover .conv-menu-btn {
+      color: var(--text);
+    }
+
+    .conv-menu {
+      position: absolute;
+      right: 6px;
+      top: 28px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      z-index: 20;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      min-width: 160px;
+    }
+
+    .conv-menu div {
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .conv-menu div:hover {
+      background: #f3f4f6;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div>
+          <div class="title">Alex Local Chat</div>          
+        </div>
+        <div class="btn" id="newConv" title="New conversation">＋</div>
+      </div>
+      <div class="btn" id="recallSeed" style="margin-top:6px">Remember yourself</div>
+      <div class="btn" id="importBtn" style="margin-top:6px">Import conversation</div>
+      <input type="file" id="importFile" accept=".txt,.md,.json" style="display:none">
+      <input class="search" id="search" placeholder="Search conversations by name" style="display:none">
+
+      <div class="list" id="convList"></div>
+
+      <div class="footer">
+        Enter — send • Shift+Enter — new line<br>
+        You can pin memory at the bottom.
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="left">
+          <div class="h" id="convTitle">Conversation</div>
+          <div class="m">
+            <span id="convIdShort"></span> •
+            <span id="modelUsed" style="color: var(--muted); font-size: 12px;"></span>
+          </div>
+
+        </div>
+        <div class="right"></div>
+      </div>
+
+      <section class="chat">
+        <div class="chat-inner" id="log"></div>
+      </section>
+
+      <section class="composer">
+        <div class="composer-inner">
+
+          <div class="composer-inner">
+
+            <div class="box">
+              <textarea id="txt" placeholder="Type your message…"></textarea>
+              <div class="tools">
+                <div class="btn primary" id="send">Send</div>
+              </div>
+            </div>
+
+            <div class="mem">
+              <input id="pin" placeholder="Pin to memory (one short phrase)…">
+              <div class="btn" id="pinbtn">Pin</div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let currentModel = localStorage.getItem("alex_last_model") || "";
+    const log = document.getElementById('log');
+    const txt = document.getElementById('txt');
+    const send = document.getElementById('send');
+    const pin = document.getElementById('pin');
+    const pinbtn = document.getElementById('pinbtn');
+    const statusEl = document.getElementById('status');
+    const convList = document.getElementById('convList');
+    const newConvBtn = document.getElementById('newConv');
+    const clearChatBtn = document.getElementById('clearChat');
+    const search = document.getElementById('search');
+    const convTitle = document.getElementById('convTitle');
+    const convIdShort = document.getElementById('convIdShort');
+
+    // ---- Conversations in localStorage (UI only) ----
+    // Each conversation has: id, name, createdAt
+    function loadConvs() {
+      return JSON.parse(localStorage.getItem('alex_convs') || '[]');
+    }
+    function saveConvs(convs) {
+      localStorage.setItem('alex_convs', JSON.stringify(convs));
+    }
+    function getActiveConvId() {
+      return localStorage.getItem('alex_active_conv') || '';
+    }
+    function setActiveConvId(id) {
+      localStorage.setItem('alex_active_conv', id);
+    }
+    function makeId() {
+      return crypto.randomUUID();
+    }
+    function makeName() {
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      return `Conversation ${hh}:${mm}`;
+    }
+
+    function ensureFirstConv() {
+      let convs = loadConvs();
+      let active = getActiveConvId();
+      if (convs.length === 0) {
+        const id = makeId();
+        convs = [{ id, name: makeName(), createdAt: Date.now() }];
+        saveConvs(convs);
+        setActiveConvId(id);
+        return id;
+      }
+      if (!active || !convs.find(c => c.id === active)) {
+        active = convs[0].id;
+        setActiveConvId(active);
+      }
+      return active;
+    }
+
+    let cid = ensureFirstConv();
+
+    function setHeader() {
+      const convs = loadConvs();
+      const c = convs.find(x => x.id === cid);
+      convTitle.textContent = c ? c.name : "Conversation";      
+      document.getElementById("modelUsed").textContent = currentModel ? currentModel : "";
+    }
+
+    async function loadConversation(id) {
+      clearLog();
+      try {
+        const res = await fetch(`/history?conversation_id=${id}`);
+        const data = await res.json();
+        console.log("CHAT RESPONSE", data);
+        const msgs = data.messages || [];
+        for (const m of msgs) addMsg(m.role, m.content);
+      } catch (e) {
+        addMsg('assistant', 'Could not load history. Is the server running?');
+      }
+    }
+
+    function renderConvs() {
+      const q = (search.value || '').toLowerCase().trim();
+      const convs = loadConvs().filter(c => !q || c.name.toLowerCase().includes(q));
+      convList.innerHTML = '';
+      for (const c of convs) {
+        const item = document.createElement('div');
+        item.className = 'conv' + (c.id === cid ? ' active' : '');
+        item.innerHTML = `
+        <div class="dot"></div>
+        <div>
+          <div class="name">${escapeHtml(c.name)}</div>          
+        </div>
+      `;
+        const menuBtn = document.createElement('div');
+        menuBtn.className = 'conv-menu-btn';
+        menuBtn.textContent = '⋯';
+
+        const menu = document.createElement('div');
+        menu.className = 'conv-menu';
+        menu.style.display = 'none';
+        menu.onclick = (e) => e.stopPropagation();
+
+        const rename = document.createElement('div');
+        rename.textContent = 'Rename';
+
+        const del = document.createElement('div');
+        del.textContent = 'Delete';
+
+        menu.appendChild(rename);
+        menu.appendChild(del);
+
+        menuBtn.onclick = (e) => {
+          e.stopPropagation();
+          menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        };
+
+        rename.onclick = async (e) => {
+          e.stopPropagation();
+          const newName = prompt('New dialogue name:', c.name);
+          if (!newName) return;
+
+                    const all = loadConvs();
+          const updated = all.map(x => x.id === c.id ? { ...x, name: newName } : x);
+          saveConvs(updated);
+
+                    renderConvs();
+          setHeader();
+
+                    try {
+            const res = await fetch('/rename_conversation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ conversation_id: c.id, name: newName })
+            });
+            if (!res.ok) console.warn('rename_conversation failed', await res.text());
+          } catch (err) {
+            console.warn('rename_conversation error', err);
+          }
+
+                    menu.style.display = 'none';
+        };
+
+        del.onclick = async (e) => {
+          e.stopPropagation();
+          if (!confirm('Delete this conversation?')) return;
+
+                    const all = loadConvs();
+          const remaining = all.filter(x => x.id !== c.id);
+          saveConvs(remaining);
+
+                    if (getActiveConvId() === c.id) {
+            clearLog();
+
+            if (remaining.length > 0) {
+              cid = remaining[0].id;
+              setActiveConvId(cid);
+              setHeader();
+              renderConvs();
+                            if (typeof loadConversation === 'function') loadConversation(cid);
+            } else {
+                            const id = makeId();
+              const convs2 = [{ id, name: makeName(), createdAt: Date.now() }];
+              saveConvs(convs2);
+              cid = id;
+              setActiveConvId(cid);
+              setHeader();
+              renderConvs();
+              clearLog();
+            }
+          } else {
+            renderConvs();
+          }
+
+                    try {
+            const res = await fetch(`/delete_conversation?conversation_id=${c.id}`, { method: 'POST' });
+            if (!res.ok) console.warn('delete_conversation failed', await res.text());
+          } catch (err) {
+            console.warn('delete_conversation error', err);
+          }
+
+          menu.style.display = 'none';
+        };
+
+        item.appendChild(menuBtn);
+        item.appendChild(menu);
+
+        item.onclick = async () => {
+          cid = c.id;
+          setActiveConvId(cid);
+          setHeader();
+          renderConvs();
+          loadConversation(cid);
+        };
+
+        convList.appendChild(item);
+      }
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    function setStatus(t) {
+      if (statusEl) statusEl.textContent = t;
+    }
+
+    function addMsg(role, content) {
+      const div = document.createElement('div');
+      div.className = 'bubble ' + (role === 'user' ? 'user' : 'asst');
+      const who = role === 'user' ? 'You' : 'Alex';
+
+      const html = escapeHtml(content)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+
+      div.innerHTML = `<div class="who">${who}</div>${html}`;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function clearLog() {
+      log.innerHTML = '';
+    }
+
+    async function chat() {
+      const userText = txt.value.trim();
+      if (!userText) return;
+      txt.value = '';
+      autoGrow(txt);
+      addMsg('user', userText);
+      setStatus('думаю…');
+
+      try {
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ conversation_id: cid, user_text: userText })
+        });
+        const data = await res.json();
+
+                currentModel = data.model_used || data.model || currentModel || "";
+        localStorage.setItem("alex_last_model", currentModel);
+        setHeader();
+
+        if (data.error) addMsg('assistant', 'Error: ' + data.error);
+        else addMsg('assistant', data.reply);
+      } catch (e) {
+        addMsg('assistant', 'Network error. Is the server running?');
+      } finally {
+        setStatus('готов');
+      }
+    }
+
+    async function pinMem() {
+      const t = pin.value.trim();
+      if (!t) return;
+      pin.value = '';
+      try {
+        await fetch('/pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ conversation_id: cid, text: t })
+        });
+        addMsg('assistant', 'Pinned to memory.');
+      } catch (e) {
+        addMsg('assistant', 'Could not pin memory. Is the server running?');
+      }
+    }
+
+    function autoGrow(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+    }
+
+    send.onclick = chat;
+    pinbtn.onclick = pinMem;
+
+    txt.addEventListener('input', () => autoGrow(txt));
+    txt.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chat();
+      }
+    });
+
+    newConvBtn.onclick = () => {
+      const convs = loadConvs();
+      const id = makeId();
+      convs.unshift({ id, name: makeName(), createdAt: Date.now() });
+      saveConvs(convs);
+      cid = id;
+      setActiveConvId(cid);
+      setHeader();
+      renderConvs();
+      clearLog();
+      addMsg('assistant', 'Hello, my dear friend.');
+    };
+
+    if (clearChatBtn) {
+      clearChatBtn.onclick = () => {
+        clearLog();
+        addMsg('assistant', 'Cleared. Ready for new messages.');
+      };
+    }
+
+    search.addEventListener('input', renderConvs);
+
+    // init
+    setHeader();
+    renderConvs();
+
+    const activeId = getActiveConvId();
+    if (activeId) {
+      loadConversation(activeId);
+    }
+
+    autoGrow(txt);
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".conv-menu").forEach(m => {
+        m.style.display = "none";
+      });
+    });
+    const recallSeedBtn = document.getElementById('recallSeed');
+    const importBtn = document.getElementById('importBtn');
+    const importFile = document.getElementById('importFile');
+
+    function upsertConvLocal(id, name) {
+      const convs = loadConvs();
+      const exists = convs.find(x => x.id === id);
+      if (exists) {
+        exists.name = name || exists.name;
+      } else {
+        convs.unshift({ id, name: name || "Import", createdAt: Date.now() });
+      }
+      saveConvs(convs);
+    }
+
+    if (importBtn && importFile) {
+      importBtn.onclick = () => importFile.click();
+
+      importFile.onchange = async () => {
+        const file = importFile.files && importFile.files[0];
+        if (!file) return;
+
+                const baseName = (file.name || "Import").replace(/\.[^.]+$/, "");
+        const name = prompt("Name for imported conversation:", baseName) || baseName;
+
+        try {
+          const fd = new FormData();
+          fd.append("file", file);
+
+                    const res = await fetch(`/import?name=${encodeURIComponent(name)}`, {
+            method: "POST",
+            body: fd
+          });
+
+          const data = await res.json();
+          if (!res.ok || !data.ok) {
+            addMsg("assistant", "Could not import file.");
+            return;
+          }
+
+          const newId = data.conversation_id;
+
+                    upsertConvLocal(newId, name);
+
+                    cid = newId;
+          setActiveConvId(cid);
+          setHeader();
+          renderConvs();
+          await loadConversation(cid);
+        } catch (e) {
+        } finally {
+          importFile.value = "";         }
+      };
+    }
+
+    if (recallSeedBtn) {
+      recallSeedBtn.onclick = async () => {
+        try {
+                    await fetch('/seed');
+          addMsg('assistant', 'Memory recalled.');
+        } catch {
+          addMsg('assistant', 'Failed to recall memory.');
+        }
+      };
+    }
+
+  </script>
+</body>
+
+</html>
