@@ -71,3 +71,7 @@ Here’s what the local chat interface looks like when running:
 Download the full project here: alex-local-public.zip
 
 Or explore the source files below.
+
+P.S. I found the model openai/gpt-4o-2024-11-20 closer to the original ChatGPT latest snapshot. You can change the model in the app.py file: 
+body = {
+        "model": "openai/gpt-4o-2024-11-20"
